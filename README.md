@@ -1,11 +1,27 @@
 # 20251205_AI_Workshop
+- [Hands-on preparation](#hands-on-preparation)
+
 - [VBA](#VBA)
-    - [reference VBA script](#reference-VBA-script)
+    - [reference prompt for VBA](#reference-prompt-for-vba)
+    - [reference prompt for error handling](#reference-prompt-for-error-handling)
+    - [reference VBA script](#reference-vba-script)
 - [n8n cloud news feed](#n8n-cloud-news-feed)
     - [Links](#links)
     - [n8n flow nodes](#n8n-flow-nodes)
+    - [n8n template](#n8n-template)
     - [prompt for Javascript](#prompt-for-javascript)
     - [reference Javascript](#reference-javascript)
+- [Further References](#further-references)
+
+## Hands-on preparation
+1. n8n pre-register:
+- n8n cloud: https://n8n.io/
+- use email to register, answer questiionaire until you reach this page or dashboard w/ similar UI
+![alt text](image-1.png)
+2. News API pre-register:
+- News API Website: https://newsapi.org/
+- go to Account page after register
+![alt text](image-2.png)
 
 ## VBA
 ### reference prompt for VBA
@@ -156,6 +172,7 @@ End Sub
 
 ## n8n cloud news feed
 ### Links
+#### Hands-on Links
 - n8n cloud: https://n8n.io/
 - News API Website: https://newsapi.org/
 - News API URL: https://newsapi.org/v2/everything
@@ -168,9 +185,119 @@ End Sub
 > docs: for checking parameters
 
 
-
 ### n8n flow nodes
 ![alt text](image.png)
+
+### n8n template
+```json
+{
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "f522051a-6470-4ab3-8429-4b7d21762d38",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "21e997cc-8be2-4da5-a49e-25216c458275",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $input.all()) {\n  item.json.myNewField = 1;\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "a6d0da6a-aee0-44a4-ac80-efa1aabcd6ce",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        624,
+        0
+      ],
+      "id": "04f0df79-782a-4d15-b761-29ceb42c964b",
+      "name": "Send a message",
+      "webhookId": "04c1694a-63ce-4759-9518-ff5fd77be456",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "va3NmL1ut6DR2PJe",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "296ee8bd690ece19605cf0558b12e2db62ee0ca3ed9781d93e315970cb43a8c1"
+  }
+}
+```
 
 ### prompt for Javascript
 ```plain_text
@@ -255,3 +382,16 @@ if (data.status === 'ok' && data.articles && data.articles.length > 0) {
 
 return [{ json: { emailText: finalString } }];
 ```
+
+
+
+## Further References
+### n8n template
+- n8n template - A Very Simple "Human in the Loop" Email Response System Using AI and IMAP: https://n8n.io/workflows/2907-a-very-simple-human-in-the-loop-email-response-system-using-ai-and-imap/
+
+- n8n template - Automate Installation Booking Approvals with Slack & Gmail Forms: https://n8n.io/workflows/8124-automate-installation-booking-approvals-with-slack-and-gmail-forms/
+
+
+### Public APIs
+- HKO API Docs: https://www.hko.gov.hk/en/weatherAPI/doc/files/HKO_Open_Data_API_Documentation.pdf
+- HKGOV API: https://data.gov.hk/tc-datasets?page=1&format=api
